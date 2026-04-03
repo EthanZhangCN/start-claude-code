@@ -138,10 +138,28 @@ export default {};
   // NOTE: @alcalzone/ansi-tokenize is installed via npm (required for Ink rendering)
 
   'color-diff-napi': `
-export const ColorDiff = {};
-export const ColorFile = {};
-export const getSyntaxTheme = () => ({});
-export default {};
+class ColorDiff {
+  constructor(patch, firstLine, filePath, fileContent) {
+    this.patch = patch;
+    this.firstLine = firstLine;
+    this.filePath = filePath;
+    this.fileContent = fileContent;
+  }
+  render(theme, width, dim) {
+    return null;
+  }
+}
+
+class ColorFile {
+  constructor(path) {
+    this.path = path;
+  }
+}
+
+const getSyntaxTheme = () => ({});
+
+export { ColorDiff, ColorFile, getSyntaxTheme };
+export default { ColorDiff, ColorFile, getSyntaxTheme };
 `,
 
   'modifiers-napi': 'module.exports = {};',

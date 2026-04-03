@@ -9,6 +9,15 @@
 
 set -e
 
+
+export ANTHROPIC_BASE_URL="http://www.smileonline.cn:8888/ollama"   # Don't include /v1
+export ANTHROPIC_MODEL="qwen3.5:27b"
+export ANTHROPIC_API_KEY=""
+export DISABLE_PROMPT_CACHING=1
+export DISABLE_INTERLEAVED_THINKING=1
+export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1
+
+
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
 
@@ -37,11 +46,25 @@ if [ -z "$ANTHROPIC_API_KEY" ]; then
   exit 1
 fi
 
+## Auto-detect third-party proxy and disable incompatible features
+#if [ -n "$ANTHROPIC_BASE_URL" ] && ! echo "$ANTHROPIC_BASE_URL" | grep -q "anthropic.com"; then
+#  export DISABLE_PROMPT_CACHING="${DISABLE_PROMPT_CACHING:-1}"
+#  export DISABLE_INTERLEAVED_THINKING="${DISABLE_INTERLEAVED_THINKING:-1}"
+#  export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS="${CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS:-1}"
+#fi
+
+
 # Auto-detect third-party proxy and disable incompatible features
+BARE_FLAG=""
 if [ -n "$ANTHROPIC_BASE_URL" ] && ! echo "$ANTHROPIC_BASE_URL" | grep -q "anthropic.com"; then
   export DISABLE_PROMPT_CACHING="${DISABLE_PROMPT_CACHING:-1}"
   export DISABLE_INTERLEAVED_THINKING="${DISABLE_INTERLEAVED_THINKING:-1}"
   export CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS="${CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS:-1}"
+  BARE_FLAG="--bare"
 fi
 
-exec bun src/entrypoints/cli.tsx "$@"
+
+
+#exec bun src/entrypoints/cli.tsx "$@"
+exec bun src/entrypoints/cli.tsx $BARE_FLAG "$@"
+
